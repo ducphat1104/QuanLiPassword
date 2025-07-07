@@ -379,6 +379,37 @@ body {
     }
 }
 
+/* Modal Positioning Fix */
+.modal-container {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+}
+
+.modal-content {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 28rem !important;
+    margin: 0 auto !important;
+    border-radius: 1rem !important;
+    overflow: hidden !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+@media (max-width: 640px) {
+    .modal-content {
+        max-width: calc(100vw - 2rem) !important;
+        margin: 0 1rem !important;
+    }
+}
+
 /* Auth Background Grid Pattern */
 .bg-grid-pattern {
     background-image:

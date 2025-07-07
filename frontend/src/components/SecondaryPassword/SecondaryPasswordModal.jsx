@@ -128,7 +128,7 @@ const SecondaryPasswordModal = ({ isOpen, onClose, serviceName, onSuccess }) => 
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="modal-container">
                     {/* Backdrop */}
                     <motion.div
                         variants={overlayVariants}
@@ -145,7 +145,7 @@ const SecondaryPasswordModal = ({ isOpen, onClose, serviceName, onSuccess }) => 
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="relative w-full max-w-sm sm:max-w-md mx-3 sm:mx-4 bg-card-bg rounded-2xl shadow-2xl border border-border-primary overflow-hidden"
+                        className="modal-content bg-card-bg border border-border-primary"
                         onKeyDown={handleKeyDown}
                         onTouchStart={handleTouchStart}
                         onTouchEnd={handleTouchEnd}
