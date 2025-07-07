@@ -94,9 +94,23 @@ const PasswordCard = ({ data, onSoftDelete, onEditClick, token, API_URL }) => {
     const [swipeOffset, setSwipeOffset] = useState(0);
     const [showSwipeActions, setShowSwipeActions] = useState(false);
     const [showSecondaryPasswordModal, setShowSecondaryPasswordModal] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const menuRef = useRef(null);
 
     const { isEnabled, checkSession } = useSecondaryPassword();
+
+    // Detect mobile device
+    useEffect(() => {
+        const checkMobile = () => {
+            const isMobileDevice = window.innerWidth <= 768 ||
+                /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            setIsMobile(isMobileDevice);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -210,39 +224,50 @@ const PasswordCard = ({ data, onSoftDelete, onEditClick, token, API_URL }) => {
         );
     };
 
-    // Swipe handlers
+    // Swipe handlers - Conditional based on device
     const swipeHandlers = useSwipeable({
         onSwipedLeft: (eventData) => {
-            console.log('Swiped left!', eventData);
-            setSwipeOffset(-80);
-            setShowSwipeActions(true);
+            // Chỉ trigger nếu swipe đủ mạnh và horizontal
+            if (Math.abs(eventData.deltaX) > Math.abs(eventData.deltaY) * 2) {
+                console.log('🔄 Swiped left!', eventData);
+                setSwipeOffset(-80);
+                setShowSwipeActions(true);
+                hapticFeedback.light();
+            }
         },
         onSwipedRight: (eventData) => {
-            console.log('Swiped right!', eventData);
-            setSwipeOffset(80);
-            setShowSwipeActions(true);
+            // Chỉ trigger nếu swipe đủ mạnh và horizontal
+            if (Math.abs(eventData.deltaX) > Math.abs(eventData.deltaY) * 2) {
+                console.log('🔄 Swiped right!', eventData);
+                setSwipeOffset(80);
+                setShowSwipeActions(true);
+                hapticFeedback.light();
+            }
         },
         onSwiping: (eventData) => {
-            const offset = Math.max(-100, Math.min(100, eventData.deltaX));
-            if (Math.abs(offset) > 15) {
-                setSwipeOffset(offset);
-                setShowSwipeActions(Math.abs(offset) > 30);
+            // Chỉ xử lý nếu swipe horizontal (không vertical scroll)
+            if (Math.abs(eventData.deltaX) > Math.abs(eventData.deltaY) * 1.5) {
+                const offset = Math.max(-100, Math.min(100, eventData.deltaX));
+                if (Math.abs(offset) > 20) {
+                    setSwipeOffset(offset);
+                    setShowSwipeActions(Math.abs(offset) > 40);
+                }
             }
         },
         onSwiped: (eventData) => {
-            console.log('Swipe ended', eventData);
+            console.log('🔄 Swipe ended', eventData);
             // Reset after a delay
             setTimeout(() => {
                 setSwipeOffset(0);
                 setShowSwipeActions(false);
             }, 2000);
         },
-        trackMouse: true, // Enable for testing on desktop
-        trackTouch: true,
-        preventScrollOnSwipe: true,
-        delta: 15, // Increased sensitivity
-        swipeDuration: 500,
-        touchEventOptions: { passive: false }
+        trackMouse: !isMobile, // Chỉ enable mouse trên desktop
+        trackTouch: !isMobile, // Disable touch trên mobile để tránh conflict
+        preventScrollOnSwipe: false, // Cho phép scroll
+        delta: isMobile ? 50 : 25, // Threshold cao hơn trên mobile
+        swipeDuration: 300, // Giảm duration
+        touchEventOptions: { passive: true } // Passive để không block scroll
     });
 
     const handleQuickEdit = () => {
@@ -290,7 +315,7 @@ const PasswordCard = ({ data, onSoftDelete, onEditClick, token, API_URL }) => {
 
             {/* Main Card - 3D Modern Design */}
             <div
-                {...swipeHandlers}
+                {...(isMobile ? {} : swipeHandlers)} // Chỉ apply swipe trên desktop
                 className="bg-gradient-to-br from-card-bg via-card-bg/98 to-card-bg/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl p-4 flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-3 hover:scale-[1.02] relative border-2 border-border-primary/50 hover:border-primary-custom/40 cursor-pointer select-none group"
                 style={{
                     transform: `translateX(${Math.max(-80, Math.min(80, swipeOffset))}px)`,
@@ -363,10 +388,12 @@ const PasswordCard = ({ data, onSoftDelete, onEditClick, token, API_URL }) => {
                     <div className="relative" ref={menuRef}>
                         <button
                             onClick={() => setShowMenu(!showMenu)}
-                            className="text-text-tertiary hover:text-text-secondary transition-all duration-300 p-2 rounded-lg hover:bg-gradient-to-r hover:from-bg-tertiary/50 hover:to-bg-tertiary/30 opacity-0 group-hover:opacity-100 transform hover:scale-110 hover:rotate-90 active:scale-95"
+                            className={`text-text-tertiary hover:text-text-secondary transition-all duration-300 p-2 rounded-lg hover:bg-gradient-to-r hover:from-bg-tertiary/50 hover:to-bg-tertiary/30 transform hover:scale-110 hover:rotate-90 active:scale-95 ${isMobile ? 'opacity-100 p-3' : 'opacity-0 group-hover:opacity-100'
+                                }`}
                             aria-label="More options"
                         >
-                            <FiMoreVertical className="w-4 h-4 transition-transform duration-300" />
+                            <FiMoreVertical className={`transition-transform duration-300 ${isMobile ? 'w-5 h-5' : 'w-4 h-4'
+                                }`} />
                         </button>
                         {showMenu && (
                             <div className="absolute right-0 top-full mt-2 w-40 bg-gradient-to-br from-card-bg to-card-bg/95 backdrop-blur-sm rounded-xl shadow-2xl border border-border-primary/50 z-50 overflow-hidden animate-in slide-in-from-top-2 fade-in duration-300">
