@@ -94,11 +94,11 @@ const corsOptions = {
             'http://127.0.0.1:3003'
         ];
 
-        // Production origins từ environment variables
+        // Production origins từ environment variables (remove trailing slash)
         const productionOrigins = [
             process.env.FRONTEND_URL,
             process.env.CORS_ORIGIN
-        ].filter(Boolean);
+        ].filter(Boolean).map(url => url.replace(/\/$/, ''));
 
         // Combine all allowed origins
         const allowedOrigins = [
