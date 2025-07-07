@@ -14,7 +14,6 @@ import PasswordStatsChart from '../components/PasswordStatsChart';
 import BottomNavigation from '../components/BottomNavigation';
 import PageTransition from '../components/PageTransition';
 import AnimatedCard from '../components/AnimatedCard';
-import PullToRefresh from '../components/PullToRefresh';
 import { hapticFeedback } from '../utils/haptics';
 import LoadingSpinner from '../components/LoadingSpinner';
 import FloatingActionButton from '../components/FloatingActionButton';
@@ -90,7 +89,7 @@ const Dashboard = () => {
         }
     };
 
-    // Pull to refresh handler
+    // Manual refresh handler (for refresh button if needed)
     const handleRefresh = async () => {
         hapticFeedback.refresh();
         await fetchPasswords();
@@ -213,11 +212,7 @@ const Dashboard = () => {
 
                 {/* Main Content */}
                 <main className="flex-1 min-w-0">
-                    <PullToRefresh
-                        onRefresh={handleRefresh}
-                        className="h-full"
-                        enabled={!loading}
-                    >
+                    <div className="h-full overflow-y-auto">
                         <div className="p-4 lg:p-6">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 lg:mb-8 gap-4">
                                 <div>
@@ -278,7 +273,7 @@ const Dashboard = () => {
 
                             {renderContent()}
                         </div>
-                    </PullToRefresh>
+                    </div>
                 </main>
             </div>
 

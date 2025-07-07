@@ -6,7 +6,7 @@
 // Haptic feedback types
 export const HapticType = {
     LIGHT: 'light',
-    MEDIUM: 'medium', 
+    MEDIUM: 'medium',
     HEAVY: 'heavy',
     SUCCESS: 'success',
     WARNING: 'warning',
@@ -42,7 +42,7 @@ export const triggerHaptic = (type = HapticType.LIGHT) => {
     };
 
     const pattern = patterns[type] || patterns[HapticType.LIGHT];
-    
+
     try {
         if (navigator.vibrate) {
             navigator.vibrate(pattern);
@@ -62,26 +62,30 @@ export const hapticFeedback = {
     buttonPress: () => triggerHaptic(HapticType.LIGHT),
     buttonSuccess: () => triggerHaptic(HapticType.SUCCESS),
     buttonError: () => triggerHaptic(HapticType.ERROR),
-    
+
     // Form interactions
     inputFocus: () => triggerHaptic(HapticType.SELECTION),
     inputError: () => triggerHaptic(HapticType.WARNING),
     formSubmit: () => triggerHaptic(HapticType.MEDIUM),
-    
+
     // Navigation
     tabSwitch: () => triggerHaptic(HapticType.LIGHT),
     pageTransition: () => triggerHaptic(HapticType.MEDIUM),
-    
+
     // Actions
     copy: () => triggerHaptic(HapticType.SUCCESS),
     delete: () => triggerHaptic(HapticType.ERROR),
     edit: () => triggerHaptic(HapticType.MEDIUM),
     refresh: () => triggerHaptic(HapticType.LIGHT),
-    
+
     // Gestures
     swipeAction: () => triggerHaptic(HapticType.MEDIUM),
-    pullRefresh: () => triggerHaptic(HapticType.SUCCESS),
-    longPress: () => triggerHaptic(HapticType.HEAVY)
+    longPress: () => triggerHaptic(HapticType.HEAVY),
+
+    // General feedback
+    light: () => triggerHaptic(HapticType.LIGHT),
+    medium: () => triggerHaptic(HapticType.MEDIUM),
+    heavy: () => triggerHaptic(HapticType.HEAVY)
 };
 
 export default hapticFeedback;

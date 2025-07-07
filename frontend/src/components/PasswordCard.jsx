@@ -8,6 +8,7 @@ import { FaGoogle, FaFacebook, FaGithub, FaUniversity, FaKey } from 'react-icons
 import { FiCopy, FiEye, FiEyeOff, FiTrash2, FiEdit, FiMoreVertical, FiLoader, FiUser, FiLock } from 'react-icons/fi';
 import { useSecondaryPassword } from '../context/SecondaryPasswordContext';
 import SecondaryPasswordModal from './SecondaryPassword/SecondaryPasswordModal';
+import usePerformance from '../hooks/usePerformance';
 
 // Fallback icon generator with consistent sizing
 const getServiceIcon = (serviceName) => {
@@ -98,19 +99,18 @@ const PasswordCard = ({ data, onSoftDelete, onEditClick, token, API_URL }) => {
     const menuRef = useRef(null);
 
     const { isEnabled, checkSession } = useSecondaryPassword();
+    const {
+        performanceLevel,
+        getPerformanceStyle,
+        shouldUseHeavyEffects,
+        isMobile: isMobileDevice,
+        isDesktop
+    } = usePerformance();
 
-    // Detect mobile device
+    // Update isMobile state from performance hook
     useEffect(() => {
-        const checkMobile = () => {
-            const isMobileDevice = window.innerWidth <= 768 ||
-                /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            setIsMobile(isMobileDevice);
-        };
-
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+        setIsMobile(isMobileDevice);
+    }, [isMobileDevice]);
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -313,10 +313,10 @@ const PasswordCard = ({ data, onSoftDelete, onEditClick, token, API_URL }) => {
                 </>
             )}
 
-            {/* Main Card - 3D Modern Design */}
+            {/* Main Card - Performance Optimized Design */}
             <div
                 {...(isMobile ? {} : swipeHandlers)} // Chỉ apply swipe trên desktop
-                className="bg-gradient-to-br from-card-bg via-card-bg/98 to-card-bg/95 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl p-4 flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-3 hover:scale-[1.02] relative border-2 border-border-primary/50 hover:border-primary-custom/40 cursor-pointer select-none group"
+                className={`${getPerformanceStyle('gradient')} ${getPerformanceStyle('blur')} ${getPerformanceStyle('borderRadius')} ${getPerformanceStyle('shadow')} ${getPerformanceStyle('transform')} ${getPerformanceStyle('animation')} ${getPerformanceStyle('border')} p-4 flex flex-col justify-between relative cursor-pointer select-none group`}
                 style={{
                     transform: `translateX(${Math.max(-80, Math.min(80, swipeOffset))}px)`,
                     transition: showSwipeActions ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -324,7 +324,8 @@ const PasswordCard = ({ data, onSoftDelete, onEditClick, token, API_URL }) => {
                     boxShadow: showSwipeActions ? 'none' : '0 10px 30px rgba(0,0,0,0.1), 0 1px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)'
                 }}
                 onMouseMove={(e) => {
-                    if (!showSwipeActions) {
+                    // Chỉ apply 3D effects trên desktop với performance cao
+                    if (!showSwipeActions && shouldUseHeavyEffects()) {
                         const rect = e.currentTarget.getBoundingClientRect();
                         const x = e.clientX - rect.left;
                         const y = e.clientY - rect.top;
@@ -346,7 +347,8 @@ const PasswordCard = ({ data, onSoftDelete, onEditClick, token, API_URL }) => {
                 }}
                 onMouseLeave={(e) => {
                     setShowMenu(false);
-                    if (!showSwipeActions) {
+                    // Chỉ reset 3D transform trên desktop
+                    if (!showSwipeActions && shouldUseHeavyEffects()) {
                         e.currentTarget.style.transform = `
                             translateX(${Math.max(-80, Math.min(80, swipeOffset))}px)
                             perspective(1000px)
