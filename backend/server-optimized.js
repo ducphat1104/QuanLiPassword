@@ -172,6 +172,27 @@ app.get('/ping', (req, res) => {
     });
 });
 
+// Keep-alive endpoints for external monitoring
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
+app.get('/ping', (req, res) => {
+    res.status(200).send('pong');
+});
+
+app.get('/wake', (req, res) => {
+    res.status(200).json({
+        status: 'awake',
+        message: 'Server is running',
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Các route API với giới hạn tốc độ cụ thể
 app.get('/api', (req, res) => {
     res.json({
