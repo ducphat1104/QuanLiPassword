@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiLock, FiEye, FiEyeOff, FiShield, FiX, FiClock } from 'react-icons/fi';
 import { useSecondaryPassword } from '../../context/SecondaryPasswordContext';
@@ -18,14 +19,27 @@ const SecondaryPasswordModal = ({ isOpen, onClose, serviceName, onSuccess }) => 
         console.log('🔐 Modal - Thời gian nhớ:', rememberDuration, 'phút, đang tải:', loading);
     }, [rememberDuration, loading]);
 
-    // Focus vào input khi modal mở
+    // Focus vào input khi modal mở và lock body scroll
     useEffect(() => {
-        if (isOpen && passwordInputRef.current) {
-            setTimeout(() => {
-                passwordInputRef.current.focus();
-                console.log('🎯 Đã focus vào input mật khẩu cấp 2');
-            }, 100);
+        if (isOpen) {
+            // Lock body scroll để modal center đúng
+            document.body.style.overflow = 'hidden';
+
+            if (passwordInputRef.current) {
+                setTimeout(() => {
+                    passwordInputRef.current.focus();
+                    console.log('🎯 Đã focus vào input mật khẩu cấp 2');
+                }, 100);
+            }
+        } else {
+            // Unlock body scroll
+            document.body.style.overflow = 'unset';
         }
+
+        // Cleanup khi component unmount
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
     }, [isOpen]);
 
     // Reset form khi modal đóng
@@ -125,10 +139,24 @@ const SecondaryPasswordModal = ({ isOpen, onClose, serviceName, onSuccess }) => 
         exit: { opacity: 0 }
     };
 
-    return (
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
-                <div className="modal-container">
+                <div
+                    className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 9999,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '1rem'
+                    }}
+                >
                     {/* Backdrop */}
                     <motion.div
                         variants={overlayVariants}
@@ -145,7 +173,11 @@ const SecondaryPasswordModal = ({ isOpen, onClose, serviceName, onSuccess }) => 
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="modal-content bg-card-bg border border-border-primary"
+                        className="relative w-full max-w-sm sm:max-w-md mx-auto bg-card-bg rounded-2xl shadow-2xl border border-border-primary overflow-hidden"
+                        style={{
+                            maxWidth: '28rem',
+                            width: '100%'
+                        }}
                         onKeyDown={handleKeyDown}
                         onTouchStart={handleTouchStart}
                         onTouchEnd={handleTouchEnd}
@@ -288,7 +320,8 @@ const SecondaryPasswordModal = ({ isOpen, onClose, serviceName, onSuccess }) => 
                     </motion.div>
                 </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };
 
