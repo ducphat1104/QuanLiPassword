@@ -18,8 +18,8 @@ const PasswordStrengthMeter = ({ score }) => {
 
     return (
         <div className="mt-2">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+            <div className="w-full bg-bg-tertiary rounded-full h-2">
+                <div
                     className={`h-2 rounded-full transition-all duration-300 ${currentStrength.color}`}
                     style={{ width: `${widthPercentage}%` }}
                 ></div>
@@ -61,44 +61,44 @@ const PasswordGeneratorInput = ({ password, onPasswordChange, placeholder }) => 
         <div className="mb-5">
             {/* --- Options Toggle Button --- */}
             <div className="flex justify-between items-center mb-2">
-                <label htmlFor="password" className="block text-gray-700 text-sm font-bold">Mật khẩu</label>
+                <label htmlFor="password" className="block text-text-primary text-sm font-bold">Mật khẩu</label>
                 <button
                     type="button"
                     onClick={() => setShowOptions(!showOptions)}
-                    className="text-sm text-blue-600 hover:underline flex items-center"
+                    className="text-sm text-primary-custom hover:underline flex items-center transition-colors duration-200"
                 >
                     Tùy chọn {showOptions ? <FiChevronUp className="ml-1" /> : <FiChevronDown className="ml-1" />}
                 </button>
             </div>
-            
+
             {/* --- Advanced Options Panel --- */}
             {showOptions && (
-                <div className="mb-3 p-4 bg-gray-50 rounded-lg border">
+                <div className="mb-3 p-4 bg-bg-tertiary rounded-lg border border-border-primary">
                     <div className="mb-4">
-                        <label htmlFor="length" className="block text-sm font-medium text-gray-700 mb-1">Độ dài: {options.length}</label>
+                        <label htmlFor="length" className="block text-sm font-medium text-text-primary mb-1">Độ dài: {options.length}</label>
                         <input
                             type="range" id="length" min="8" max="64"
                             value={options.length}
                             onChange={(e) => setOptions({ ...options, length: parseInt(e.target.value, 10) })}
-                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            className="w-full h-2 bg-input-bg rounded-lg appearance-none cursor-pointer accent-primary-custom"
                         />
                     </div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                         <div>
-                            <input type="checkbox" id="uppercase" checked={options.includeUppercase} onChange={(e) => setOptions({ ...options, includeUppercase: e.target.checked })} className="mr-2 h-4 w-4 rounded" />
-                            <label htmlFor="uppercase">Chữ hoa (A-Z)</label>
+                            <input type="checkbox" id="uppercase" checked={options.includeUppercase} onChange={(e) => setOptions({ ...options, includeUppercase: e.target.checked })} className="mr-2 h-4 w-4 rounded accent-primary-custom" />
+                            <label htmlFor="uppercase" className="text-text-primary">Chữ hoa (A-Z)</label>
                         </div>
                         <div>
-                            <input type="checkbox" id="lowercase" checked={options.includeLowercase} onChange={(e) => setOptions({ ...options, includeLowercase: e.target.checked })} className="mr-2 h-4 w-4 rounded" />
-                            <label htmlFor="lowercase">Chữ thường (a-z)</label>
+                            <input type="checkbox" id="lowercase" checked={options.includeLowercase} onChange={(e) => setOptions({ ...options, includeLowercase: e.target.checked })} className="mr-2 h-4 w-4 rounded accent-primary-custom" />
+                            <label htmlFor="lowercase" className="text-text-primary">Chữ thường (a-z)</label>
                         </div>
                         <div>
-                            <input type="checkbox" id="numbers" checked={options.includeNumbers} onChange={(e) => setOptions({ ...options, includeNumbers: e.target.checked })} className="mr-2 h-4 w-4 rounded" />
-                            <label htmlFor="numbers">Số (0-9)</label>
+                            <input type="checkbox" id="numbers" checked={options.includeNumbers} onChange={(e) => setOptions({ ...options, includeNumbers: e.target.checked })} className="mr-2 h-4 w-4 rounded accent-primary-custom" />
+                            <label htmlFor="numbers" className="text-text-primary">Số (0-9)</label>
                         </div>
                         <div>
-                            <input type="checkbox" id="symbols" checked={options.includeSymbols} onChange={(e) => setOptions({ ...options, includeSymbols: e.target.checked })} className="mr-2 h-4 w-4 rounded" />
-                            <label htmlFor="symbols">Ký tự (!@#)</label>
+                            <input type="checkbox" id="symbols" checked={options.includeSymbols} onChange={(e) => setOptions({ ...options, includeSymbols: e.target.checked })} className="mr-2 h-4 w-4 rounded accent-primary-custom" />
+                            <label htmlFor="symbols" className="text-text-primary">Ký tự (!@#)</label>
                         </div>
                     </div>
                 </div>
@@ -111,16 +111,16 @@ const PasswordGeneratorInput = ({ password, onPasswordChange, placeholder }) => 
                     id="password"
                     value={password || ''} // Ensure value is never null/undefined
                     onChange={(e) => onPasswordChange(e.target.value)}
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition pr-10"
+                    className="w-full px-4 py-4 bg-input-bg border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-custom transition text-text-primary pr-12 text-base"
                     placeholder={placeholder || "••••••••"}
                 />
                 <button
                     type="button"
                     onClick={handleGeneratePassword}
-                    className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-blue-500 transition-colors"
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-text-tertiary hover:text-primary-custom transition-colors"
                     title="Tạo mật khẩu ngẫu nhiên theo tùy chọn"
                 >
-                    <FiKey />
+                    <FiKey className="text-lg" />
                 </button>
             </div>
 

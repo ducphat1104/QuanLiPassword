@@ -1,19 +1,20 @@
 const mongoose = require('mongoose');
 
+// Schema cho model Password - Mật khẩu
 const PasswordSchema = new mongoose.Schema({
     serviceName: {
         type: String,
-        required: [true, 'Please provide a service name'],
+        required: [true, 'Vui lòng cung cấp tên dịch vụ'],
         trim: true,
     },
     username: {
         type: String,
-        required: [true, 'Please provide a username'],
+        required: [true, 'Vui lòng cung cấp tên đăng nhập'],
         trim: true,
     },
     encryptedPassword: {
         type: String,
-        required: [true, 'Please provide a password'],
+        required: [true, 'Vui lòng cung cấp mật khẩu'],
     },
     category: {
         type: String,
@@ -22,7 +23,7 @@ const PasswordSchema = new mongoose.Schema({
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'User', // Tham chiếu đến model User
         required: true,
     },
     createdAt: {
@@ -32,7 +33,7 @@ const PasswordSchema = new mongoose.Schema({
     isDeleted: {
         type: Boolean,
         default: false,
-        index: true, // Index for better query performance
+        index: true, // Index để tăng hiệu suất truy vấn
     },
     deletedAt: {
         type: Date,

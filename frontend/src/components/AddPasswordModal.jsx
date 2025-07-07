@@ -41,36 +41,36 @@ const AddPasswordModal = ({ isOpen, onClose, onSuccess, token, API_URL }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 transition-opacity duration-300">
-            <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg m-4 transform transition-all duration-300 scale-95 opacity-0 animate-fade-in-scale">
-                <div className="flex justify-between items-center mb-6 border-b pb-4">
-                    <h2 className="text-2xl font-bold text-gray-800">Thêm Mật khẩu Mới</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 transition-opacity duration-300 p-4">
+            <div className="bg-modal-bg rounded-xl shadow-custom-lg p-6 lg:p-8 w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0 animate-fade-in-scale border border-border-primary max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-6 border-b border-border-primary pb-4">
+                    <h2 className="text-2xl font-bold text-text-primary">Thêm Mật khẩu Mới</h2>
+                    <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary transition-colors">
                         <FiX size={28} />
                     </button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-5">
-                        <label htmlFor="serviceName" className="block text-gray-700 text-sm font-bold mb-2">Tên dịch vụ</label>
-                        <input type="text" id="serviceName" value={serviceName} onChange={(e) => setServiceName(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Ví dụ: Google, Facebook" />
+                        <label htmlFor="serviceName" className="block text-text-primary text-sm font-bold mb-2">Tên dịch vụ</label>
+                        <input type="text" id="serviceName" value={serviceName} onChange={(e) => setServiceName(e.target.value)} className="w-full px-4 py-4 bg-input-bg border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-custom transition text-text-primary text-base" placeholder="Ví dụ: Google, Facebook" />
                     </div>
                     <div className="mb-5">
-                        <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">Tên người dùng hoặc Email</label>
-                        <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="tendangnhap_cua_ban" />
+                        <label htmlFor="username" className="block text-text-primary text-sm font-bold mb-2">Tên người dùng hoặc Email</label>
+                        <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full px-4 py-4 bg-input-bg border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-custom transition text-text-primary text-base" placeholder="tendangnhap_cua_ban" />
                     </div>
                     <div className="mb-5">
-                        <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">Danh mục (tùy chọn)</label>
-                        <input type="text" id="category" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Ví dụ: Công việc, Mạng xã hội" />
+                        <label htmlFor="category" className="block text-text-primary text-sm font-bold mb-2">Danh mục (tùy chọn)</label>
+                        <input type="text" id="category" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-4 py-4 bg-input-bg border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-custom transition text-text-primary text-base" placeholder="Ví dụ: Công việc, Mạng xã hội" />
                     </div>
-                    <PasswordGeneratorInput 
+                    <PasswordGeneratorInput
                         password={password}
                         onPasswordChange={setPassword}
                     />
-                    <div className="flex items-center justify-end space-x-4">
-                        <button type="button" onClick={onClose} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition-colors">
+                    <div className="flex flex-col sm:flex-row items-center justify-end space-y-3 sm:space-y-0 sm:space-x-4 pb-20 sm:pb-0">
+                        <button type="button" onClick={onClose} className="w-full sm:w-auto bg-bg-tertiary hover:bg-text-tertiary text-text-primary font-bold py-4 px-6 rounded-lg focus:outline-none focus:shadow-outline transition-colors min-h-[48px]">
                             Hủy
                         </button>
-                        <button type="submit" disabled={isSubmitting} className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-1 shadow-lg">
+                        <button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-gradient-to-r from-primary-custom to-secondary-custom hover:from-primary-hover hover:to-purple-600 text-white font-bold py-4 px-6 rounded-lg focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-1 shadow-custom min-h-[48px]">
                             {isSubmitting ? 'Đang lưu...' : 'Lưu Mật khẩu'}
                         </button>
                     </div>

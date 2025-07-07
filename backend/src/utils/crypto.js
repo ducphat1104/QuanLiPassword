@@ -1,28 +1,35 @@
 const CryptoJS = require('crypto-js');
 
+// Lấy khóa mã hóa từ biến môi trường
 const secretKey = process.env.ENCRYPTION_KEY;
 
 if (!secretKey) {
-    throw new Error("ENCRYPTION_KEY is not set in the environment variables.");
+    throw new Error("ENCRYPTION_KEY chưa được thiết lập trong biến môi trường.");
 }
 
 /**
- * Encrypts a text using AES.
- * @param {string} text - The text to encrypt.
- * @returns {string} - The encrypted text.
+ * Mã hóa văn bản sử dụng AES
+ * @param {string} text - Văn bản cần mã hóa
+ * @returns {string} - Văn bản đã được mã hóa
  */
 const encrypt = (text) => {
-    return CryptoJS.AES.encrypt(text, secretKey).toString();
+    console.log('🔐 Đang mã hóa văn bản...');
+    const encrypted = CryptoJS.AES.encrypt(text, secretKey).toString();
+    console.log('✅ Đã mã hóa thành công');
+    return encrypted;
 };
 
 /**
- * Decrypts a text using AES.
- * @param {string} ciphertext - The text to decrypt.
- * @returns {string} - The decrypted text.
+ * Giải mã văn bản sử dụng AES
+ * @param {string} ciphertext - Văn bản cần giải mã
+ * @returns {string} - Văn bản đã được giải mã
  */
 const decrypt = (ciphertext) => {
+    console.log('🔓 Đang giải mã văn bản...');
     const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
-    return bytes.toString(CryptoJS.enc.Utf8);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    console.log('✅ Đã giải mã thành công');
+    return decrypted;
 };
 
 module.exports = { encrypt, decrypt };

@@ -12,25 +12,25 @@ const {
 } = require('../controllers/passwordController');
 const auth = require('../middleware/authMiddleware');
 
-// The auth middleware is applied to all routes in this file
+// Middleware xác thực được áp dụng cho tất cả routes trong file này
 router.use(auth);
 
-// Routes for /api/passwords
+// Routes cho /api/passwords
 router.route('/')
-    .get(getPasswords)       // GET all passwords for the user
-    .post(createPassword);    // POST a new password
+    .get(getPasswords)       // GET - Lấy tất cả mật khẩu của người dùng
+    .post(createPassword);    // POST - Tạo mật khẩu mới
 
-// Routes for /api/passwords/:id
+// Routes cho /api/passwords/:id
 router.route('/:id')
-    .put(updatePassword)     // PUT (update) a specific password
-    .delete(deletePassword); // DELETE a specific password
+    .put(updatePassword)     // PUT - Cập nhật mật khẩu cụ thể
+    .delete(deletePassword); // DELETE - Xóa mật khẩu cụ thể
 
-// Route to get a decrypted version of a specific password
+// Route để lấy phiên bản đã giải mã của mật khẩu cụ thể
 router.get('/:id/decrypt', getDecryptedPassword);
 
-// Trash-related routes
-router.get('/trash', getDeletedPasswords);
-router.put('/:id/restore', restorePassword);
-router.delete('/:id/permanent', deletePasswordPermanently);
+// Routes liên quan đến thùng rác
+router.get('/trash', getDeletedPasswords);           // Lấy danh sách mật khẩu đã xóa
+router.put('/:id/restore', restorePassword);         // Khôi phục mật khẩu từ thùng rác
+router.delete('/:id/permanent', deletePasswordPermanently); // Xóa vĩnh viễn mật khẩu
 
 module.exports = router;

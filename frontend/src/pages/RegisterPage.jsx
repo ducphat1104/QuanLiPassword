@@ -1,7 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FiUser, FiLock, FiUserPlus } from 'react-icons/fi';
 import AuthContext from '../context/AuthContext';
+import AuthBackground from '../components/AuthBackground';
+import AuthCard from '../components/AuthCard';
+import AnimatedInput from '../components/AnimatedInput';
+import AnimatedButton from '../components/AnimatedButton';
+import ThemeToggle from '../components/ThemeToggle';
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
@@ -13,91 +19,128 @@ const RegisterPage = () => {
 
     const { username, password, password2 } = formData;
     const { register } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+    // Hàm kiểm tra mật khẩu mạnh
+    const validatePassword = (password) => {
+        const minLength = password.length >= 6;
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasNumbers = /\d/.test(password);
+
+        return {
+            isValid: minLength && hasLowerCase && hasUpperCase && hasNumbers,
+            errors: [
+                !minLength && 'Mật khẩu phải có ít nhất 6 ký tự',
+                !hasLowerCase && 'Mật khẩu phải có ít nhất 1 chữ thường (a-z)',
+                !hasUpperCase && 'Mật khẩu phải có ít nhất 1 chữ hoa (A-Z)',
+                !hasNumbers && 'Mật khẩu phải có ít nhất 1 số (0-9)'
+            ].filter(Boolean)
+        };
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
+        console.log('📝 RegisterPage - Form submit:', { username, passwordLength: password?.length, password2Length: password2?.length });
+
+        // Kiểm tra mật khẩu khớp
         if (password !== password2) {
+            console.log('❌ RegisterPage - Mật khẩu không khớp');
             toast.error('Mật khẩu không khớp');
             return;
         }
+
+        // Kiểm tra độ mạnh mật khẩu
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.isValid) {
+            console.log('❌ RegisterPage - Mật khẩu không đủ mạnh:', passwordValidation.errors);
+            // Hiển thị lỗi tổng hợp trong 1 toast
+            const errorMessage = `Mật khẩu chưa đủ mạnh:\n${passwordValidation.errors.join('\n')}`;
+            toast.error(errorMessage, {
+                style: {
+                    whiteSpace: 'pre-line' // Cho phép xuống dòng
+                }
+            });
+            return;
+        }
+
+        console.log('🚀 RegisterPage - Đang gọi register function...');
         setLoading(true);
         await register(username, password);
         // AuthContext handles navigation and notifications.
         setLoading(false);
+        console.log('✅ RegisterPage - Hoàn thành register process');
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center">
-            <div className="bg-white shadow-md rounded-lg p-8 max-w-sm w-full">
-                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Tạo tài khoản của bạn</h2>
-                <form onSubmit={onSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-                            Tên đăng nhập
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="username"
-                            type="text"
-                            placeholder="Chọn một tên đăng nhập"
-                            name="username"
-                            value={username}
-                            onChange={onChange}
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                            Mật khẩu
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="password"
-                            type="password"
-                            placeholder="******************"
-                            name="password"
-                            value={password}
-                            onChange={onChange}
-                            minLength="6"
-                            required
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password2">
-                            Xác nhận Mật khẩu
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                            id="password2"
-                            type="password"
-                            placeholder="******************"
-                            name="password2"
-                            value={password2}
-                            onChange={onChange}
-                            minLength="6"
-                            required
-                        />
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full disabled:bg-blue-300"
-                            type="submit"
-                            disabled={loading}
-                        >
-                            {loading ? 'Đang tạo tài khoản...' : 'Đăng ký'}
-                        </button>
-                    </div>
-                </form>
-                <p className="text-center text-gray-500 text-sm mt-6">
-                    Đã có tài khoản?{' '}
-                    <Link to="/login" className="font-bold text-blue-500 hover:text-blue-800">
-                        Đăng nhập
-                    </Link>
-                </p>
+        <AuthBackground>
+            {/* Theme Toggle - Fixed Position */}
+            <div className="fixed top-6 right-6 z-20">
+                <ThemeToggle />
             </div>
-        </div>
+
+            <AuthCard
+                title="Đăng ký"
+                subtitle="Tạo tài khoản mới để bắt đầu quản lý mật khẩu của bạn một cách an toàn."
+            >
+                <form onSubmit={onSubmit} className="space-y-6">
+                    <AnimatedInput
+                        label="Tên đăng nhập"
+                        type="text"
+                        name="username"
+                        value={username}
+                        onChange={onChange}
+                        icon={FiUser}
+                        required
+                    />
+
+                    <AnimatedInput
+                        label="Mật khẩu"
+                        type="password"
+                        name="password"
+                        value={password}
+                        onChange={onChange}
+                        icon={FiLock}
+                        minLength="6"
+                        required
+                    />
+
+                    <AnimatedInput
+                        label="Xác nhận mật khẩu"
+                        type="password"
+                        name="password2"
+                        value={password2}
+                        onChange={onChange}
+                        icon={FiLock}
+                        minLength="6"
+                        required
+                    />
+
+                    <AnimatedButton
+                        type="submit"
+                        loading={loading}
+                        icon={FiUserPlus}
+                        disabled={loading}
+                    >
+                        Đăng ký
+                    </AnimatedButton>
+                </form>
+
+                <div className="mt-8 text-center">
+                    <p className="text-gray-600 text-sm">
+                        Đã có tài khoản?{' '}
+                        <Link
+                            to="/login"
+                            className="font-semibold text-primary-custom hover:text-primary-hover transition-colors duration-200 hover:underline"
+                        >
+                            Đăng nhập ngay
+                        </Link>
+                    </p>
+                </div>
+            </AuthCard>
+        </AuthBackground>
     );
 };
 

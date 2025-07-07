@@ -1,41 +1,50 @@
 const Password = require('../models/Password');
 const { encrypt, decrypt } = require('../utils/crypto');
 
-// @desc    Get all passwords for the logged-in user
+// @desc    Lấy tất cả mật khẩu của người dùng đã đăng nhập
 // @route   GET /api/passwords
-// @access  Private
+// @access  Private - Riêng tư (cần JWT token)
 exports.getPasswords = async (req, res) => {
     try {
-        // Only find passwords that are not marked as deleted
+        console.log('📋 Đang lấy danh sách mật khẩu cho user ID:', req.user.id);
+
+        // Chỉ tìm những mật khẩu chưa bị đánh dấu là đã xóa
         const passwords = await Password.find({ user: req.user.id, isDeleted: false }).select('-encryptedPassword').sort({ createdAt: -1 });
+
+        console.log('✅ Đã lấy', passwords.length, 'mật khẩu');
         res.status(200).json({ success: true, count: passwords.length, data: passwords });
     } catch (error) {
-        res.status(500).json({ success: false, error: 'Server Error' });
+        console.error('❌ Lỗi lấy danh sách mật khẩu:', error);
+        res.status(500).json({ success: false, error: 'Lỗi máy chủ' });
     }
 };
 
-// @desc    Create a new password for the logged-in user
+// @desc    Tạo mật khẩu mới cho người dùng đã đăng nhập
 // @route   POST /api/passwords
-// @access  Private
+// @access  Private - Riêng tư (cần JWT token)
 exports.createPassword = async (req, res) => {
     try {
         const { serviceName, username, password, category } = req.body;
 
+        console.log('🔨 Đang tạo mật khẩu mới cho dịch vụ:', serviceName, 'user ID:', req.user.id);
+
         if (!serviceName || !username || !password) {
-            return res.status(400).json({ success: false, error: 'Please provide all required fields.' });
+            console.log('❌ Thiếu thông tin bắt buộc');
+            return res.status(400).json({ success: false, error: 'Vui lòng cung cấp đầy đủ thông tin bắt buộc.' });
         }
 
+        console.log('🔐 Đang mã hóa mật khẩu...');
         const encryptedPassword = encrypt(password);
 
         const newPassword = await Password.create({
             serviceName,
             username,
             encryptedPassword,
-            category, // Add category here
-            user: req.user.id // Associate with the logged-in user
+            category, // Thêm danh mục
+            user: req.user.id // Liên kết với người dùng đã đăng nhập
         });
 
-        // Don't send back the encrypted password
+        // Không gửi lại mật khẩu đã mã hóa
         const responseData = {
             _id: newPassword._id,
             serviceName: newPassword.serviceName,
@@ -44,10 +53,11 @@ exports.createPassword = async (req, res) => {
             createdAt: newPassword.createdAt
         };
 
+        console.log('✅ Đã tạo mật khẩu mới cho:', serviceName);
         res.status(201).json({ success: true, data: responseData });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, error: 'Server Error' });
+        console.error('❌ Lỗi tạo mật khẩu:', error);
+        res.status(500).json({ success: false, error: 'Lỗi máy chủ' });
     }
 };
 
@@ -92,7 +102,7 @@ exports.updatePassword = async (req, res) => {
         }
 
         const { serviceName, username, password, category } = req.body;
-        
+
         const updateData = {};
         if (serviceName) updateData.serviceName = serviceName;
         if (username) updateData.username = username;

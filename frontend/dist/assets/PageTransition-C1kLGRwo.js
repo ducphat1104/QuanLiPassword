@@ -1,0 +1,1 @@
+import{j as i,m as a}from"./ui-C_uF5axt.js";import"./vendor-Bz3rmKJE.js";const t=({children:t,className:e=""})=>i.jsx(a.div,{initial:"initial",animate:"in",exit:"out",variants:{initial:{opacity:0,y:20,scale:.98},in:{opacity:1,y:0,scale:1},out:{opacity:0,y:-20,scale:.98}},transition:{type:"tween",ease:"anticipate",duration:.4},className:e,children:t});export{t as P};

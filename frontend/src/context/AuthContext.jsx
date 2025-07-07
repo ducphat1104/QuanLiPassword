@@ -6,29 +6,30 @@ const AuthContext = createContext();
 
 // const API_URL = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api/auth` : 'http://localhost:5000/api/auth';
 const API_URL = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL}/api/auth`
-  : 'http://localhost:5000/api/auth';
+    ? `${import.meta.env.VITE_API_URL}/api/auth`
+    : 'http://localhost:5000/api/auth';
 
 export const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState(localStorage.getItem('token'));
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [token, setToken] = useState(localStorage.getItem('token')); // Token xác thực
+    const [user, setUser] = useState(null); // Thông tin người dùng
+    const [loading, setLoading] = useState(true); // Trạng thái đang tải
 
-    // Function to set the authorization header for all axios requests
+    // Hàm thiết lập header authorization cho tất cả axios requests
     const setAuthToken = (token) => {
         if (token) {
             axios.defaults.headers.common['x-auth-token'] = token;
             localStorage.setItem('token', token);
+            console.log('🔑 Đã thiết lập token xác thực');
         } else {
             delete axios.defaults.headers.common['x-auth-token'];
             localStorage.removeItem('token');
+            console.log('🗑️ Đã xóa token xác thực');
         }
     };
 
-    // Effect to load user on initial mount
+    // Effect để tải user khi component mount
     useEffect(() => {
-        // console.log('Env:', import.meta.env); // Xem tất cả biến môi trường
-        // console.log('API URL:', import.meta.env.VITE_API_URL); // Kiểm tra biến cụ thể
+        console.log('🔄 Đang tải thông tin người dùng...');
         const loadUser = async () => {
             const savedToken = localStorage.getItem('token');
             if (savedToken) {
@@ -37,8 +38,9 @@ export const AuthProvider = ({ children }) => {
                     const res = await axios.get(`${API_URL}/me`);
                     setUser(res.data);
                     setToken(savedToken);
+                    console.log('✅ Đã tải thông tin người dùng:', res.data.username);
                 } catch (err) {
-                    console.error('Failed to load user', err);
+                    console.error('❌ Lỗi tải thông tin người dùng:', err);
                     setAuthToken(null);
                     setToken(null);
                     setUser(null);
@@ -101,7 +103,12 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (username, password) => {
         try {
+            console.log('🔐 Frontend - Đang gửi request đăng ký:', { username, passwordLength: password?.length });
+            console.log('🌐 API URL:', `${API_URL}/register`);
+
             const res = await axios.post(`${API_URL}/register`, { username, password });
+            console.log('✅ Frontend - Đăng ký thành công, nhận token');
+
             setAuthToken(res.data.token); // Set token first
             setToken(res.data.token);
 
@@ -111,7 +118,28 @@ export const AuthProvider = ({ children }) => {
 
             toast.success('Đăng ký thành công!');
         } catch (err) {
-            toast.error(err.response?.data?.msg || 'Đăng ký thất bại');
+            console.error('❌ Frontend - Lỗi đăng ký:', {
+                status: err.response?.status,
+                statusText: err.response?.statusText,
+                data: err.response?.data,
+                message: err.message,
+                url: err.config?.url,
+                method: err.config?.method
+            });
+            console.error('📋 Chi tiết response data:', err.response?.data);
+
+            // Hiển thị lỗi từ server (chỉ khi client-side validation không bắt được)
+            if (err.response?.data?.errors && err.response.data.errors.length > 0) {
+                const validationErrors = err.response.data.errors.map(error => error.msg);
+                const errorMessage = `Mật khẩu chưa đủ mạnh:\n${validationErrors.join('\n')}`;
+                toast.error(errorMessage, {
+                    style: {
+                        whiteSpace: 'pre-line'
+                    }
+                });
+            } else {
+                toast.error(err.response?.data?.msg || err.response?.data?.message || 'Đăng ký thất bại');
+            }
             console.error(err);
         }
     };
@@ -130,7 +158,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ token, user, loading, login, register, logout, setAuthToken }}>
+        <AuthContext.Provider value={{ token, user, loading, login, register, logout, setAuthToken, setUser }}>
             {!loading && children}
         </AuthContext.Provider>
     );
