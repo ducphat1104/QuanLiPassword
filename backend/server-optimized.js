@@ -155,35 +155,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(requestLogger);
 
-// Các route kiểm tra sức khỏe
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: 'OK',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'development'
-    });
-});
-
-app.get('/ping', (req, res) => {
-    res.status(200).json({
-        message: 'pong',
-        timestamp: new Date().toISOString()
-    });
-});
-
-// Minimal health endpoint for monitoring
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: 'ok',
-        uptime: Math.floor(process.uptime())
-    });
-});
-
-// Ultra-lightweight ping endpoint for cron monitoring
-app.get('/ping', (req, res) => {
-    res.status(200).send('pong');
-});
+// Ultra-lightweight endpoints for cron monitoring (no duplicates)
 
 // Minimal keep-alive endpoint (smallest possible response)
 app.get('/alive', (req, res) => {
