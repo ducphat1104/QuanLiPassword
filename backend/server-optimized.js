@@ -172,17 +172,27 @@ app.get('/ping', (req, res) => {
     });
 });
 
-// Keep-alive endpoints for external monitoring
+// Minimal health endpoint for monitoring
 app.get('/health', (req, res) => {
     res.status(200).json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime()
+        status: 'ok',
+        uptime: Math.floor(process.uptime())
     });
 });
 
+// Ultra-lightweight ping endpoint for cron monitoring
 app.get('/ping', (req, res) => {
     res.status(200).send('pong');
+});
+
+// Minimal keep-alive endpoint (smallest possible response)
+app.get('/alive', (req, res) => {
+    res.status(200).send('ok');
+});
+
+// Tiny JSON response for monitoring
+app.get('/status', (req, res) => {
+    res.status(200).json({ status: 'up' });
 });
 
 app.get('/wake', (req, res) => {
